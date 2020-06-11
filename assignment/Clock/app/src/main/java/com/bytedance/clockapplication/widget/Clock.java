@@ -67,11 +67,7 @@ public class Clock extends View {
         int widthWithoutPadding = width - getPaddingLeft() - getPaddingRight();
         int heightWithoutPadding = height - getPaddingTop() - getPaddingBottom();
 
-        if (widthWithoutPadding > heightWithoutPadding) {
-            size = heightWithoutPadding;
-        } else {
-            size = widthWithoutPadding;
-        }
+        size = Math.min(widthWithoutPadding, heightWithoutPadding);
 
         setMeasuredDimension(size + getPaddingLeft() + getPaddingRight(), size + getPaddingTop() + getPaddingBottom());
     }
@@ -97,16 +93,16 @@ public class Clock extends View {
         mCenterY = halfWidth;
         mRadius = halfWidth;
         PANEL_RADIUS = mRadius;
-        HOUR_POINTER_LENGTH = PANEL_RADIUS - 400;
-        MINUTE_POINTER_LENGTH = PANEL_RADIUS - 250;
-        SECOND_POINTER_LENGTH = PANEL_RADIUS - 150;
+        HOUR_POINTER_LENGTH = PANEL_RADIUS - 300;
+        MINUTE_POINTER_LENGTH = PANEL_RADIUS - 150;
+        SECOND_POINTER_LENGTH = PANEL_RADIUS - 100;
 
         drawDegrees(canvas);
         drawHoursValues(canvas);
         drawNeedles(canvas);
 
         // todo 每一秒刷新一次，让指针动起来
-
+        postInvalidateDelayed(1000);
     }
 
     private void drawDegrees(Canvas canvas) {
@@ -167,6 +163,7 @@ public class Clock extends View {
         drawPointer(canvas, 2, nowSeconds);
         // 画分针
         // todo 画分针
+        drawPointer(canvas, 1, nowMinutes);
         // 画时针
         int part = nowMinutes / 12;
         drawPointer(canvas, 0, 5 * nowHours + part);
@@ -189,11 +186,13 @@ public class Clock extends View {
                 break;
             case 1:
                 // todo 画分针，设置分针的颜色
-
+                degree = value * UNIT_DEGREE;
+                mNeedlePaint.setColor(Color.BLUE);
+                pointerHeadXY = getPointerHeadXY(MINUTE_POINTER_LENGTH,degree);
                 break;
             case 2:
                 degree = value * UNIT_DEGREE;
-                mNeedlePaint.setColor(Color.GREEN);
+                mNeedlePaint.setColor(Color.BLACK);
                 pointerHeadXY = getPointerHeadXY(SECOND_POINTER_LENGTH, degree);
                 break;
         }
